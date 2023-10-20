@@ -1,5 +1,5 @@
-import PixelData from "./PixelData";
-import type { RGB } from "./PixelData";
+import PixelData from './PixelData';
+import type { RGB } from './PixelData';
 
 export default class PixelEditor {
   /** The underlying <canvas> element */
@@ -24,13 +24,13 @@ export default class PixelEditor {
   #painted = new Set<string>();
 
   /** Listeners for change events */
-  #listeners: Array<(state: PixelData["state"]) => void> = [];
+  #listeners: Array<(state: PixelData['state']) => void> = [];
 
   constructor(el: HTMLCanvasElement, artboard: { w: number; h: number }) {
     this.#el = el;
 
     // get the 2D rendering context
-    const ctx = el.getContext("2d");
+    const ctx = el.getContext('2d');
     if (!ctx) throw new Error("Couldn't get rendering context");
     this.#ctx = ctx;
 
@@ -38,13 +38,14 @@ export default class PixelEditor {
     this.#artboard = artboard;
 
     // listen for pointer events
-    this.#el.addEventListener("pointerdown", this);
-    this.#el.addEventListener("pointermove", this);
-    this.#el.addEventListener("pointerup", this);
+    this.#el.addEventListener('pointerdown', this);
+    this.#el.addEventListener('pointermove', this);
+    this.#el.addEventListener('pointerup', this);
 
     // resize the canvas
     this.#el.width = this.#el.clientWidth * devicePixelRatio;
     this.#el.height = this.#el.clientHeight * devicePixelRatio;
+
     this.#ctx.scale(devicePixelRatio, devicePixelRatio);
     this.#ctx.imageSmoothingEnabled = false;
   }
@@ -52,7 +53,7 @@ export default class PixelEditor {
   /**
    * Appends a listener to be called when the state changes.
    * @param listener */
-  set onchange(listener: (state: PixelData["state"]) => void) {
+  set onchange(listener: (state: PixelData['state']) => void) {
     this.#listeners.push(listener);
   }
 
@@ -68,13 +69,13 @@ export default class PixelEditor {
   handleEvent(e: PointerEvent) {
     switch (e.type) {
       // @ts-expect-error
-      case "pointerdown": {
+      case 'pointerdown': {
         this.#el.setPointerCapture(e.pointerId);
         // fallthrough
       }
 
       // eslint-disable-next-line no-fallthrough
-      case "pointermove": {
+      case 'pointermove': {
         if (!this.#el.hasPointerCapture(e.pointerId)) return;
 
         // convert canvas pixels to artboard pixels
@@ -90,7 +91,7 @@ export default class PixelEditor {
         break;
       }
 
-      case "pointerup": {
+      case 'pointerup': {
         this.#el.releasePointerCapture(e.pointerId);
         this.#prev = undefined;
         this.#painted.clear();
@@ -107,6 +108,7 @@ export default class PixelEditor {
   #checkPainted(x: number, y: number) {
     const key = PixelData.key(x, y);
     const painted = this.#painted.has(key);
+
     this.#painted.add(key);
     return painted;
   }
@@ -198,7 +200,7 @@ export default class PixelEditor {
   /**
    * Merge remote state with the current state and redraw the canvas.
    * @param state State to merge into the current state. */
-  receive(state: PixelData["state"]) {
+  receive(state: PixelData['state']) {
     this.#data.merge(state);
     this.#draw();
   }
